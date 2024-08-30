@@ -1,0 +1,7 @@
+{
+	"name": "ir-local-host-xonnection",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "integration runtime is self hosted"
+	}
+}

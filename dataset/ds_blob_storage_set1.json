@@ -1,0 +1,61 @@
+{
+	"name": "ds_blob_storage_set1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_blob_storage_mini_project",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "usecase1"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().filename",
+					"type": "Expression"
+				},
+				"folderPath": "source",
+				"container": "mini-project-1"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "reviewid",
+				"type": "String"
+			},
+			{
+				"name": "projectid",
+				"type": "String"
+			},
+			{
+				"name": "clientname",
+				"type": "String"
+			},
+			{
+				"name": "rating",
+				"type": "String"
+			},
+			{
+				"name": "reviewtext",
+				"type": "String"
+			},
+			{
+				"name": "createdat",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

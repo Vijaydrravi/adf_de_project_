@@ -1,0 +1,87 @@
+{
+	"name": "pl_raw_to_prep_usecase_one",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_raw_to_prep_usecase_one",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"source1": {
+								"schema": "raw",
+								"table": "users"
+							},
+							"source2": {
+								"schema": "raw",
+								"table": "tasks"
+							},
+							"source3": {
+								"schema": "raw",
+								"table": "projects"
+							},
+							"source4": {
+								"schema": "raw",
+								"table": "revenue"
+							},
+							"source5": {
+								"schema": "raw",
+								"table": "client_reviews"
+							},
+							"source6": {
+								"schema": "raw",
+								"table": "project_assignments"
+							},
+							"sink1": {
+								"schema": "prep",
+								"table": "users"
+							},
+							"sink2": {
+								"schema": "prep",
+								"table": "tasks"
+							},
+							"sink3": {
+								"schema": "prep",
+								"table": "projects"
+							},
+							"sink4": {
+								"schema": "prep",
+								"table": "revenue"
+							},
+							"sink5": {
+								"schema": "prep",
+								"table": "client_reviews"
+							},
+							"sink6": {
+								"schema": "prep",
+								"table": "project_assignments"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "usecase1/prep"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-08-30T06:13:44Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

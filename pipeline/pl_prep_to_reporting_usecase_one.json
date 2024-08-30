@@ -1,0 +1,93 @@
+{
+	"name": "pl_prep_to_reporting_usecase_one",
+	"properties": {
+		"activities": [
+			{
+				"name": "all_projects",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_prep_to_reporting_all_projects_usecase_one",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"source1": {
+								"schema": "prep",
+								"table": "users"
+							},
+							"source2": {
+								"schema": "prep",
+								"table": "project_assignments"
+							},
+							"source3": {
+								"schema": "prep",
+								"table": "projects"
+							},
+							"sink1": {
+								"schema": "reporting",
+								"table": "all_projects"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "revenue_by_year",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_prep_to_reporting_sum_of_revenue_by_year_usecase_one",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"source1": {
+								"schema": "prep",
+								"table": "projects"
+							},
+							"source2": {
+								"schema": "prep",
+								"table": "revenue"
+							},
+							"sink1": {
+								"schema": "reporting",
+								"table": "revenue_by_year"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "usecase1/Reporting"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-08-30T06:13:44Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

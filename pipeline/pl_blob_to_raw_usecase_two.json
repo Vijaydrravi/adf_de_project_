@@ -1,0 +1,43 @@
+{
+	"name": "pl_blob_to_raw_usecase_two",
+	"properties": {
+		"activities": [
+			{
+				"name": "raw_data",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_blob_to_raw",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sink1": {
+								"schema": "raw",
+								"table": "products_with_price"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "usecase2/raw"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-08-30T06:13:44Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,22 @@
+{
+	"name": "ds_blob_storage_source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_blob_storage_mini_project",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "usecase1"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "source",
+				"container": "mini-project-1"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

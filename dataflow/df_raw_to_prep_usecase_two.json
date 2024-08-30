@@ -1,0 +1,129 @@
+{
+	"name": "df_raw_to_prep_usecase_two",
+	"properties": {
+		"folder": {
+			"name": "usecase2/prep"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sqldb_usecase_two",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sqldb_usecase_two",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          departmentCode as string,",
+				"          departmentName as string,",
+				"          discontinuedProductFlag1 as string,",
+				"          categoryCode as string,",
+				"          categoryName as string,",
+				"          discontinuedProductFlag2 as string,",
+				"          categoryCode1 as string,",
+				"          categoryName1 as string,",
+				"          searchCategoryCode as string,",
+				"          seriesCode as string,",
+				"          seriesName as string,",
+				"          minStandardUnitPrice as string,",
+				"          maxStandardUnitPrice as string,",
+				"          minPricePerPiece as string,",
+				"          maxPricePerPiece as string,",
+				"          brandCode as string,",
+				"          brandUrlCode as string,",
+				"          brandName as string,",
+				"          seriesStatus as string,",
+				"          catchCopy as string,",
+				"          minStandardDaysToShip as string,",
+				"          maxStandardDaysToShip as string,",
+				"          directCartType as string,",
+				"          priceCheckLessFlag as string,",
+				"          recommendFlag as string,",
+				"          volumeDiscountFlag as string,",
+				"          cValueFlag as string,",
+				"          stockItemFlag as string,",
+				"          displayStandardPriceFlag as string,",
+				"          discontinuedProductFlag as string,",
+				"          cadTypeList as string,",
+				"          comparisonSpecValueList as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 select(mapColumn(",
+				"          departmentCode,",
+				"          departmentName,",
+				"          categoryCode,",
+				"          categoryName,",
+				"          categoryCode1,",
+				"          categoryName1,",
+				"          searchCategoryCode,",
+				"          seriesCode,",
+				"          seriesName,",
+				"          minStandardUnitPrice,",
+				"          maxStandardUnitPrice,",
+				"          minPricePerPiece,",
+				"          maxPricePerPiece,",
+				"          brandCode,",
+				"          brandUrlCode,",
+				"          brandName,",
+				"          minStandardDaysToShip,",
+				"          maxStandardDaysToShip",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 aggregate(groupBy(departmentCode,",
+				"          departmentName,",
+				"          categoryCode,",
+				"          categoryName,",
+				"          categoryCode1,",
+				"          categoryName1,",
+				"          searchCategoryCode,",
+				"          seriesName,",
+				"          minStandardUnitPrice,",
+				"          maxStandardUnitPrice,",
+				"          minPricePerPiece,",
+				"          maxPricePerPiece,",
+				"          brandCode,",
+				"          brandUrlCode,",
+				"          brandName,",
+				"          minStandardDaysToShip,",
+				"          maxStandardDaysToShip,",
+				"          seriesCode),",
+				"     id = count(seriesCode)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}
