@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-mini-project01"
+		},
+		"ls_blob_storage_mini_project_connectionString": {
+			"value": ""
+		},
+		"ls_sqldb_mini_project_2_password": {
+			"value": ""
+		},
+		"ls_sqldb_set1_password": {
+			"value": ""
+		},
+		"ls_sqldb_mini_project_2_properties_typeProperties_server": {
+			"value": "ds-data-training.database.windows.net"
+		},
+		"ls_sqldb_mini_project_2_properties_typeProperties_database": {
+			"value": "db_mini_project_usecase_two"
+		},
+		"ls_sqldb_mini_project_2_properties_typeProperties_userName": {
+			"value": "vijaydrravi"
+		},
+		"ls_sqldb_set1_properties_typeProperties_server": {
+			"value": "ds-data-training.database.windows.net"
+		},
+		"ls_sqldb_set1_properties_typeProperties_database": {
+			"value": "db-mini-project"
+		},
+		"ls_sqldb_set1_properties_typeProperties_userName": {
+			"value": "vijaydrravi"
+		}
+	}
+}

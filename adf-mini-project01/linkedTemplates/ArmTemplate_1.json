@@ -1,0 +1,110 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-mini-project01"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_raw_to_prep_usecase_one')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_raw_to_prep_usecase_one",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {
+										"schema": "raw",
+										"table": "users"
+									},
+									"source2": {
+										"schema": "raw",
+										"table": "tasks"
+									},
+									"source3": {
+										"schema": "raw",
+										"table": "projects"
+									},
+									"source4": {
+										"schema": "raw",
+										"table": "revenue"
+									},
+									"source5": {
+										"schema": "raw",
+										"table": "client_reviews"
+									},
+									"source6": {
+										"schema": "raw",
+										"table": "project_assignments"
+									},
+									"sink1": {
+										"schema": "prep",
+										"table": "users"
+									},
+									"sink2": {
+										"schema": "prep",
+										"table": "tasks"
+									},
+									"sink3": {
+										"schema": "prep",
+										"table": "projects"
+									},
+									"sink4": {
+										"schema": "prep",
+										"table": "revenue"
+									},
+									"sink5": {
+										"schema": "prep",
+										"table": "client_reviews"
+									},
+									"sink6": {
+										"schema": "prep",
+										"table": "project_assignments"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "usecase1/prep"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-08-30T06:13:44Z"
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -1,0 +1,1777 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-mini-project01"
+		},
+		"ls_blob_storage_mini_project_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_blob_storage_mini_project'"
+		},
+		"ls_sqldb_mini_project_2_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_sqldb_mini_project_2'"
+		},
+		"ls_sqldb_set1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_sqldb_set1'"
+		},
+		"ls_sqldb_mini_project_2_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "ds-data-training.database.windows.net"
+		},
+		"ls_sqldb_mini_project_2_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "db_mini_project_usecase_two"
+		},
+		"ls_sqldb_mini_project_2_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "vijaydrravi"
+		},
+		"ls_sqldb_set1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "ds-data-training.database.windows.net"
+		},
+		"ls_sqldb_set1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "db-mini-project"
+		},
+		"ls_sqldb_set1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "vijaydrravi"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_blob_storage_mini_project')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "the linked service for mini- project",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_blob_storage_mini_project_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_sqldb_mini_project_2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('ls_sqldb_mini_project_2_properties_typeProperties_server')]",
+					"database": "[parameters('ls_sqldb_mini_project_2_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('ls_sqldb_mini_project_2_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_sqldb_mini_project_2_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_sqldb_set1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('ls_sqldb_set1_properties_typeProperties_server')]",
+					"database": "[parameters('ls_sqldb_set1_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('ls_sqldb_set1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_sqldb_set1_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ir-local-host-xonnection')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"description": "integration runtime is self hosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_blob_storage_set1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob_storage_mini_project",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"filename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "usecase1"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
+						"folderPath": "source",
+						"container": "mini-project-1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "reviewid",
+						"type": "String"
+					},
+					{
+						"name": "projectid",
+						"type": "String"
+					},
+					{
+						"name": "clientname",
+						"type": "String"
+					},
+					{
+						"name": "rating",
+						"type": "String"
+					},
+					{
+						"name": "reviewtext",
+						"type": "String"
+					},
+					{
+						"name": "createdat",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_blob_storage_mini_project')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_blob_storage_set2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob_storage_mini_project",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "products_with_price.csv",
+						"folderPath": "source",
+						"container": "mini-project-2"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "departmentCode",
+						"type": "String"
+					},
+					{
+						"name": "departmentName",
+						"type": "String"
+					},
+					{
+						"name": "discontinuedProductFlag1",
+						"type": "String"
+					},
+					{
+						"name": "categoryCode",
+						"type": "String"
+					},
+					{
+						"name": "categoryName",
+						"type": "String"
+					},
+					{
+						"name": "discontinuedProductFlag2",
+						"type": "String"
+					},
+					{
+						"name": "categoryCode1",
+						"type": "String"
+					},
+					{
+						"name": "categoryName1",
+						"type": "String"
+					},
+					{
+						"name": "searchCategoryCode",
+						"type": "String"
+					},
+					{
+						"name": "seriesCode",
+						"type": "String"
+					},
+					{
+						"name": "seriesName",
+						"type": "String"
+					},
+					{
+						"name": "minStandardUnitPrice",
+						"type": "String"
+					},
+					{
+						"name": "maxStandardUnitPrice",
+						"type": "String"
+					},
+					{
+						"name": "minPricePerPiece",
+						"type": "String"
+					},
+					{
+						"name": "maxPricePerPiece",
+						"type": "String"
+					},
+					{
+						"name": "brandCode",
+						"type": "String"
+					},
+					{
+						"name": "brandUrlCode",
+						"type": "String"
+					},
+					{
+						"name": "brandName",
+						"type": "String"
+					},
+					{
+						"name": "seriesStatus",
+						"type": "String"
+					},
+					{
+						"name": "catchCopy",
+						"type": "String"
+					},
+					{
+						"name": "minStandardDaysToShip",
+						"type": "String"
+					},
+					{
+						"name": "maxStandardDaysToShip",
+						"type": "String"
+					},
+					{
+						"name": "directCartType",
+						"type": "String"
+					},
+					{
+						"name": "priceCheckLessFlag",
+						"type": "String"
+					},
+					{
+						"name": "recommendFlag",
+						"type": "String"
+					},
+					{
+						"name": "volumeDiscountFlag",
+						"type": "String"
+					},
+					{
+						"name": "cValueFlag",
+						"type": "String"
+					},
+					{
+						"name": "stockItemFlag",
+						"type": "String"
+					},
+					{
+						"name": "displayStandardPriceFlag",
+						"type": "String"
+					},
+					{
+						"name": "discontinuedProductFlag",
+						"type": "String"
+					},
+					{
+						"name": "cadTypeList",
+						"type": "String"
+					},
+					{
+						"name": "comparisonSpecValueList",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_blob_storage_mini_project')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_blob_storage_source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob_storage_mini_project",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "usecase1"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "source",
+						"container": "mini-project-1"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_blob_storage_mini_project')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sqldb_mini_project')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sqldb_set1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"schema": {
+						"type": "string"
+					},
+					"table": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "usecase1"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().schema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().table",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sqldb_set1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sqldb_usecase_two')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sqldb_mini_project_2",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"schema": {
+						"type": "string"
+					},
+					"table": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().schema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().table",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sqldb_mini_project_2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_blob_to_raw_usecase_one')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata1",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_blob_storage_source",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "BinaryReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "source",
+							"value": {
+								"value": "@activity('Get Metadata1').output.childItems",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Set variable1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('source')",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false,
+											"tableOption": "autoCreate",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_blob_storage_set1",
+											"type": "DatasetReference",
+											"parameters": {
+												"filename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_sqldb_mini_project",
+											"type": "DatasetReference",
+											"parameters": {
+												"schema": "raw",
+												"table": {
+													"value": "@substring(item().name, 0, indexof(item().name, '.'))\n",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"source": {
+						"type": "Array"
+					}
+				},
+				"folder": {
+					"name": "usecase1/raw"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-08-30T06:13:44Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_blob_storage_source')]",
+				"[concat(variables('factoryId'), '/datasets/ds_blob_storage_set1')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sqldb_mini_project')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_blob_to_raw')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "usecase2/raw"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_blob_storage_set2",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_usecase_two",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          departmentCode as string,",
+						"          departmentName as string,",
+						"          discontinuedProductFlag1 as string,",
+						"          categoryCode as string,",
+						"          categoryName as string,",
+						"          discontinuedProductFlag2 as string,",
+						"          categoryCode1 as string,",
+						"          categoryName1 as string,",
+						"          searchCategoryCode as string,",
+						"          seriesCode as string,",
+						"          seriesName as string,",
+						"          minStandardUnitPrice as string,",
+						"          maxStandardUnitPrice as string,",
+						"          minPricePerPiece as string,",
+						"          maxPricePerPiece as string,",
+						"          brandCode as string,",
+						"          brandUrlCode as string,",
+						"          brandName as string,",
+						"          seriesStatus as string,",
+						"          catchCopy as string,",
+						"          minStandardDaysToShip as string,",
+						"          maxStandardDaysToShip as string,",
+						"          directCartType as string,",
+						"          priceCheckLessFlag as string,",
+						"          recommendFlag as string,",
+						"          volumeDiscountFlag as string,",
+						"          cValueFlag as string,",
+						"          stockItemFlag as string,",
+						"          displayStandardPriceFlag as string,",
+						"          discontinuedProductFlag as string,",
+						"          cadTypeList as string,",
+						"          comparisonSpecValueList as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_blob_storage_set2')]",
+				"[concat(variables('factoryId'), '/datasets/ds_sqldb_usecase_two')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_creating_reporting_layers')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "usecase2/reporting"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_usecase_two",
+								"type": "DatasetReference"
+							},
+							"name": "productswithprice"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_usecase_two",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_usecase_two",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_usecase_two",
+								"type": "DatasetReference"
+							},
+							"name": "sink3"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "sort1"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "select3"
+						},
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "sort2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          departmentCode as string,",
+						"          departmentName as string,",
+						"          categoryCode as string,",
+						"          categoryName as string,",
+						"          categoryCode1 as string,",
+						"          categoryName1 as string,",
+						"          searchCategoryCode as string,",
+						"          seriesName as string,",
+						"          minStandardUnitPrice as string,",
+						"          maxStandardUnitPrice as string,",
+						"          minPricePerPiece as string,",
+						"          maxPricePerPiece as string,",
+						"          brandCode as string,",
+						"          brandUrlCode as string,",
+						"          brandName as string,",
+						"          minStandardDaysToShip as string,",
+						"          maxStandardDaysToShip as string,",
+						"          seriesCode as string,",
+						"          id as long",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> productswithprice",
+						"productswithprice select(mapColumn(",
+						"          product_name = seriesName,",
+						"          categoryCode1,",
+						"          categoryName1,",
+						"          searchCategoryCode,",
+						"          minStandardUnitPrice,",
+						"          maxStandardUnitPrice,",
+						"          minPricePerPiece,",
+						"          maxPricePerPiece,",
+						"          brandName,",
+						"          minStandardDaysToShip,",
+						"          maxStandardDaysToShip,",
+						"          seriesCode",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sort(asc(categoryName1, true)) ~> sort1",
+						"productswithprice select(mapColumn(",
+						"          departmentCode,",
+						"          departmentName,",
+						"          categoryCode",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 aggregate(groupBy(departmentName,",
+						"          departmentCode,",
+						"          categoryCode),",
+						"     product_total_count = count(departmentCode)) ~> aggregate1",
+						"productswithprice select(mapColumn(",
+						"          departmentCode,",
+						"          departmentName,",
+						"          categoryCode,",
+						"          categoryName,",
+						"          categoryCode1,",
+						"          subcategoryName = categoryName1",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select3",
+						"select3 aggregate(groupBy(departmentCode,",
+						"          departmentName,",
+						"          categoryCode,",
+						"          categoryName,",
+						"          categoryCode1,",
+						"          subcategoryName),",
+						"     sub_category = count(subcategoryName)) ~> aggregate2",
+						"aggregate2 sort(asc(sub_category, true)) ~> sort2",
+						"sort1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink2",
+						"sort2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink3"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sqldb_usecase_two')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_prep_to_reporting_all_projects_usecase_one')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "usecase1/Reporting"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source3"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "select2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          userid as string,",
+						"          username as string,",
+						"          email as string,",
+						"          role as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          assignmentid as string,",
+						"          projectid as string,",
+						"          userid as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source2",
+						"source(output(",
+						"          projectid as string,",
+						"          projectname as string,",
+						"          description as string,",
+						"          createdby as string,",
+						"          startdate as string,",
+						"          enddate as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source3",
+						"source1, source2 join(source1@userid == source2@userid,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 select(mapColumn(",
+						"          userid = source1@userid,",
+						"          username,",
+						"          email,",
+						"          role,",
+						"          assignmentid,",
+						"          projectid,",
+						"          userid = source2@userid",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1, source3 join(select1@projectid == source3@projectid,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2 select(mapColumn(",
+						"          userid,",
+						"          username,",
+						"          role,",
+						"          projectid = select1@projectid,",
+						"          projectname,",
+						"          description,",
+						"          createdby,",
+						"          startdate,",
+						"          enddate",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sqldb_mini_project')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_prep_to_reporting_sum_of_revenue_by_year_usecase_one')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "usecase1/Reporting"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "sort1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          projectid as string,",
+						"          projectname as string,",
+						"          description as string,",
+						"          createdby as string,",
+						"          startdate as string,",
+						"          enddate as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          revenueid as string,",
+						"          projectid as string,",
+						"          amount as string,",
+						"          currency as string,",
+						"          date as string,",
+						"          description as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source2",
+						"source1, source2 join(source1@projectid == source2@projectid,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 select(mapColumn(",
+						"          projectid = source1@projectid,",
+						"          projectname,",
+						"          description = source1@description,",
+						"          enddate,",
+						"          revenueid,",
+						"          amount",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 derive(year_project = year(toDate(enddate))) ~> derivedColumn1",
+						"derivedColumn1 sort(asc(year_project, true)) ~> sort1",
+						"sort1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sqldb_mini_project')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_raw_to_prep_usecase_one')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "usecase1/prep"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source3"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source4"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source5"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "source6"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "sink3"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "sink4"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "sink5"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_mini_project",
+								"type": "DatasetReference"
+							},
+							"name": "sink6"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          userid as string,",
+						"          username as string,",
+						"          email as string,",
+						"          role as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          taskid as string,",
+						"          taskname as string,",
+						"          description as string,",
+						"          assignedto as string,",
+						"          projectid as string,",
+						"          deadline as string,",
+						"          status as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source2",
+						"source(output(",
+						"          projectid as string,",
+						"          projectname as string,",
+						"          description as string,",
+						"          createdby as string,",
+						"          startdate as string,",
+						"          enddate as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source3",
+						"source(output(",
+						"          revenueid as string,",
+						"          projectid as string,",
+						"          amount as string,",
+						"          currency as string,",
+						"          date as string,",
+						"          description as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source4",
+						"source(output(",
+						"          reviewid as string,",
+						"          projectid as string,",
+						"          clientname as string,",
+						"          rating as string,",
+						"          reviewtext as string,",
+						"          createdat as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source5",
+						"source(output(",
+						"          assignmentid as string,",
+						"          projectid as string,",
+						"          userid as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source6",
+						"source1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
+						"source2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink2",
+						"source3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink3",
+						"source4 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink4",
+						"source5 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink5",
+						"source6 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink6"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sqldb_mini_project')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_raw_to_prep_usecase_two')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "usecase2/prep"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_usecase_two",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sqldb_usecase_two",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          departmentCode as string,",
+						"          departmentName as string,",
+						"          discontinuedProductFlag1 as string,",
+						"          categoryCode as string,",
+						"          categoryName as string,",
+						"          discontinuedProductFlag2 as string,",
+						"          categoryCode1 as string,",
+						"          categoryName1 as string,",
+						"          searchCategoryCode as string,",
+						"          seriesCode as string,",
+						"          seriesName as string,",
+						"          minStandardUnitPrice as string,",
+						"          maxStandardUnitPrice as string,",
+						"          minPricePerPiece as string,",
+						"          maxPricePerPiece as string,",
+						"          brandCode as string,",
+						"          brandUrlCode as string,",
+						"          brandName as string,",
+						"          seriesStatus as string,",
+						"          catchCopy as string,",
+						"          minStandardDaysToShip as string,",
+						"          maxStandardDaysToShip as string,",
+						"          directCartType as string,",
+						"          priceCheckLessFlag as string,",
+						"          recommendFlag as string,",
+						"          volumeDiscountFlag as string,",
+						"          cValueFlag as string,",
+						"          stockItemFlag as string,",
+						"          displayStandardPriceFlag as string,",
+						"          discontinuedProductFlag as string,",
+						"          cadTypeList as string,",
+						"          comparisonSpecValueList as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source1 select(mapColumn(",
+						"          departmentCode,",
+						"          departmentName,",
+						"          categoryCode,",
+						"          categoryName,",
+						"          categoryCode1,",
+						"          categoryName1,",
+						"          searchCategoryCode,",
+						"          seriesCode,",
+						"          seriesName,",
+						"          minStandardUnitPrice,",
+						"          maxStandardUnitPrice,",
+						"          minPricePerPiece,",
+						"          maxPricePerPiece,",
+						"          brandCode,",
+						"          brandUrlCode,",
+						"          brandName,",
+						"          minStandardDaysToShip,",
+						"          maxStandardDaysToShip",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 aggregate(groupBy(departmentCode,",
+						"          departmentName,",
+						"          categoryCode,",
+						"          categoryName,",
+						"          categoryCode1,",
+						"          categoryName1,",
+						"          searchCategoryCode,",
+						"          seriesName,",
+						"          minStandardUnitPrice,",
+						"          maxStandardUnitPrice,",
+						"          minPricePerPiece,",
+						"          maxPricePerPiece,",
+						"          brandCode,",
+						"          brandUrlCode,",
+						"          brandName,",
+						"          minStandardDaysToShip,",
+						"          maxStandardDaysToShip,",
+						"          seriesCode),",
+						"     id = count(seriesCode)) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sqldb_usecase_two')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_blob_to_raw_usecase_two')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "raw_data",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_blob_to_raw",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {
+										"schema": "raw",
+										"table": "products_with_price"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "usecase2/raw"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-08-30T06:13:44Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_blob_to_raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_prep_to_reporting_usecase_one')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "all_projects",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_prep_to_reporting_all_projects_usecase_one",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {
+										"schema": "prep",
+										"table": "users"
+									},
+									"source2": {
+										"schema": "prep",
+										"table": "project_assignments"
+									},
+									"source3": {
+										"schema": "prep",
+										"table": "projects"
+									},
+									"sink1": {
+										"schema": "reporting",
+										"table": "all_projects"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "revenue_by_year",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_prep_to_reporting_sum_of_revenue_by_year_usecase_one",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {
+										"schema": "prep",
+										"table": "projects"
+									},
+									"source2": {
+										"schema": "prep",
+										"table": "revenue"
+									},
+									"sink1": {
+										"schema": "reporting",
+										"table": "revenue_by_year"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "usecase1/Reporting"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-08-30T06:13:44Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_prep_to_reporting_all_projects_usecase_one')]",
+				"[concat(variables('factoryId'), '/dataflows/df_prep_to_reporting_sum_of_revenue_by_year_usecase_one')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_prep_to_reporting_usecase_two')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "reporting layer for usecase two",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_creating_reporting_layers",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"productswithprice": {
+										"schema": "prep",
+										"table": "products_with_price"
+									},
+									"sink1": {
+										"schema": "reporting",
+										"table": "products_table"
+									},
+									"sink2": {
+										"schema": "reporting",
+										"table": "category_table"
+									},
+									"sink3": {
+										"schema": "reporting",
+										"table": "sub_category_table"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "usecase2/reporting"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_creating_reporting_layers')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_raw_to_prep')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_raw_to_prep_usecase_two",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {
+										"schema": "raw",
+										"table": "products_with_price"
+									},
+									"sink1": {
+										"schema": "prep",
+										"table": "products_with_price"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "usecase2/prep"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-08-30T06:13:44Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_raw_to_prep_usecase_two')]"
+			]
+		}
+	]
+}
