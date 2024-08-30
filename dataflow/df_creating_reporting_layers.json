@@ -1,0 +1,172 @@
+{
+	"name": "df_creating_reporting_layers",
+	"properties": {
+		"folder": {
+			"name": "usecase2/reporting"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_sqldb_usecase_two",
+						"type": "DatasetReference"
+					},
+					"name": "productswithprice"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sqldb_usecase_two",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sqldb_usecase_two",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sqldb_usecase_two",
+						"type": "DatasetReference"
+					},
+					"name": "sink3"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "sort1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "aggregate2"
+				},
+				{
+					"name": "sort2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          departmentCode as string,",
+				"          departmentName as string,",
+				"          categoryCode as string,",
+				"          categoryName as string,",
+				"          categoryCode1 as string,",
+				"          categoryName1 as string,",
+				"          searchCategoryCode as string,",
+				"          seriesName as string,",
+				"          minStandardUnitPrice as string,",
+				"          maxStandardUnitPrice as string,",
+				"          minPricePerPiece as string,",
+				"          maxPricePerPiece as string,",
+				"          brandCode as string,",
+				"          brandUrlCode as string,",
+				"          brandName as string,",
+				"          minStandardDaysToShip as string,",
+				"          maxStandardDaysToShip as string,",
+				"          seriesCode as string,",
+				"          id as long",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> productswithprice",
+				"productswithprice select(mapColumn(",
+				"          product_name = seriesName,",
+				"          categoryCode1,",
+				"          categoryName1,",
+				"          searchCategoryCode,",
+				"          minStandardUnitPrice,",
+				"          maxStandardUnitPrice,",
+				"          minPricePerPiece,",
+				"          maxPricePerPiece,",
+				"          brandName,",
+				"          minStandardDaysToShip,",
+				"          maxStandardDaysToShip,",
+				"          seriesCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sort(asc(categoryName1, true)) ~> sort1",
+				"productswithprice select(mapColumn(",
+				"          departmentCode,",
+				"          departmentName,",
+				"          categoryCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 aggregate(groupBy(departmentName,",
+				"          departmentCode,",
+				"          categoryCode),",
+				"     product_total_count = count(departmentCode)) ~> aggregate1",
+				"productswithprice select(mapColumn(",
+				"          departmentCode,",
+				"          departmentName,",
+				"          categoryCode,",
+				"          categoryName,",
+				"          categoryCode1,",
+				"          subcategoryName = categoryName1",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3 aggregate(groupBy(departmentCode,",
+				"          departmentName,",
+				"          categoryCode,",
+				"          categoryName,",
+				"          categoryCode1,",
+				"          subcategoryName),",
+				"     sub_category = count(subcategoryName)) ~> aggregate2",
+				"aggregate2 sort(asc(sub_category, true)) ~> sort2",
+				"sort1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink2",
+				"sort2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink3"
+			]
+		}
+	}
+}

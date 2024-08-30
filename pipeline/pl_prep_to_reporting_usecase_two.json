@@ -1,0 +1,53 @@
+{
+	"name": "pl_prep_to_reporting_usecase_two",
+	"properties": {
+		"activities": [
+			{
+				"name": "reporting layer for usecase two",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_creating_reporting_layers",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"productswithprice": {
+								"schema": "prep",
+								"table": "products_with_price"
+							},
+							"sink1": {
+								"schema": "reporting",
+								"table": "products_table"
+							},
+							"sink2": {
+								"schema": "reporting",
+								"table": "category_table"
+							},
+							"sink3": {
+								"schema": "reporting",
+								"table": "sub_category_table"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "usecase2/reporting"
+		},
+		"annotations": []
+	}
+}
